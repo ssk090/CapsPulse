@@ -1,0 +1,53 @@
+{
+  "name": "pi-capspulse",
+  "version": "0.1.0",
+  "description": "Pulse the built-in MacBook Caps Lock LED while the Pi coding agent is working",
+  "type": "module",
+  "license": "MIT",
+  "author": "ssk090",
+  "homepage": "https://github.com/ssk090/CapsPulse#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ssk090/CapsPulse.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ssk090/CapsPulse/issues"
+  },
+  "keywords": [
+    "pi-package",
+    "pi-coding-agent",
+    "macos",
+    "caps-lock",
+    "status-light"
+  ],
+  "os": [
+    "darwin"
+  ],
+  "files": [
+    "capsLockLed.c",
+    "index.ts",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "prepublishOnly": "npm test",
+    "test": "xcrun clang -std=c11 -Wall -Wextra -Werror -fsyntax-only capsLockLed.c && npm run typecheck",
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "@earendil-works/pi-coding-agent": "*"
+  },
+  "devDependencies": {
+    "@earendil-works/pi-coding-agent": "^0.80.10",
+    "@types/node": "^24.10.0",
+    "typescript": "^5.9.3"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "pi": {
+    "extensions": [
+      "./index.ts"
+    ]
+  }
+}
