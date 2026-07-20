@@ -31,7 +31,7 @@
   ],
   "scripts": {
     "prepublishOnly": "npm test",
-    "test": "xcrun clang -std=c11 -Wall -Wextra -Werror -fsyntax-only capsLockLed.c && npm run typecheck",
+    "test": "xcrun clang -std=c11 -Wall -Wextra -Werror -fsyntax-only capsLockLed.c && node --test index.test.ts && npm run typecheck",
     "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {

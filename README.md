@@ -14,6 +14,8 @@ CapsPulse writes directly to the keyboard's HID LED output. It does not emit key
 | --- | --- |
 | Starting or ready | Solid |
 | Thinking, using tools, or responding | Pulsing |
+| Agent asked a question and is waiting for user input | Fast blinking |
+| Agent finished without requesting input | Solid |
 | Pi exits or reloads | Restored to the logical Caps Lock state |
 
 ## Requirements
@@ -70,7 +72,9 @@ The helper watches its parent process through standard input. If Pi exits or the
 
 ## Multiple Pi sessions
 
-CapsPulse currently works best with one active Pi session. Separate sessions can compete for the same physical LED. Multi-session coordination is planned for a future release.
+When multiple Pi sessions are open, CapsPulse only lets the selected cmux surface drive the LED. That surface remains the owner when another application is opened or macOS is locked, so the light continues to show the state of the last cmux tab you selected. Activity or completion in background tabs cannot replace its LED state.
+
+Outside cmux, CapsPulse uses the frontmost terminal application when focus can be detected. If focus cannot be detected, it falls back to single-session behavior.
 
 ## Development
 
