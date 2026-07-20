@@ -72,7 +72,7 @@ The helper watches its parent process through standard input. If Pi exits or the
 
 ## Multiple Pi sessions
 
-When multiple Pi sessions are open, CapsPulse only lets the selected cmux surface drive the LED. That surface remains the owner when another application is opened or macOS is locked, so the light continues to show the state of the last cmux tab you selected. Activity or completion in background tabs cannot replace its LED state.
+When multiple Pi sessions are open, CapsPulse only lets the selected cmux surface drive the LED. Ownership transfers directly when you select another cmux tab, without the previous tab restoring or overwriting the new tab's LED state. The selected surface remains the owner when another application is opened or macOS is locked, so the light continues to show the state of the last cmux tab you selected. Activity or completion in background tabs cannot replace its LED state.
 
 Outside cmux, CapsPulse uses the frontmost terminal application when focus can be detected. If focus cannot be detected, it falls back to single-session behavior.
 

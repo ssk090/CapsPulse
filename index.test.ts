@@ -1,6 +1,11 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { cmuxSurfaceIsFocused, isAssistantWaitingForInput, ledModeForEvent } from "./index.ts";
+import {
+  cmuxSurfaceIsFocused,
+  isAssistantWaitingForInput,
+  ledModeForEvent,
+  shouldRestoreOnFocusLoss,
+} from "./index.ts";
 
 test("agent settled only fast-blinks when input was requested", () => {
   assert.equal(ledModeForEvent("agent_start"), "blink");
@@ -31,4 +36,9 @@ test("only the focused cmux terminal surface controls the LED", () => {
 
 test("invalid cmux output permits single-terminal fallback", () => {
   assert.equal(cmuxSurfaceIsFocused("not json", "surface"), undefined);
+});
+
+test("a deselected cmux surface relinquishes the LED without overwriting its new owner", () => {
+  assert.equal(shouldRestoreOnFocusLoss("cmux-surface"), false);
+  assert.equal(shouldRestoreOnFocusLoss(undefined), true);
 });

@@ -160,6 +160,10 @@ async function processHasAncestor(pid: number, ancestorPid: number): Promise<boo
   return false;
 }
 
+export function shouldRestoreOnFocusLoss(cmuxSurfaceId: string | undefined): boolean {
+  return !cmuxSurfaceId;
+}
+
 export function cmuxSurfaceIsFocused(identifyOutput: string, surfaceId: string): boolean | undefined {
   try {
     const identify = JSON.parse(identifyOutput) as {
@@ -225,7 +229,7 @@ export default function capsPulse(pi: ExtensionAPI): void {
     console.error(`CapsPulse: ${message}`);
   };
 
-  const stopBlinking = async (): Promise<void> => {
+  const stopBlinking = async (restore = true): Promise<void> => {
     const child = blinkProcess;
     blinkProcess = undefined;
     if (!child || child.exitCode !== null) {
@@ -243,6 +247,9 @@ export default function capsPulse(pi: ExtensionAPI): void {
 
       child.once("exit", finish);
       child.once("error", finish);
+      if (!restore) {
+        child.stdin?.write("q");
+      }
       child.stdin?.end();
       forceStopTimer = setTimeout(() => child.kill("SIGTERM"), 1000);
     });
@@ -285,11 +292,16 @@ export default function capsPulse(pi: ExtensionAPI): void {
     const focused = await terminalIsFocused();
     lastFocusState = focused;
     if (!focused) {
-      await stopBlinking();
+      // A deselected cmux surface must relinquish the shared LED without
+      // restoring it afterward. The newly selected surface owns the next
+      // write; restoring here races with and can erase that surface's state.
+      await stopBlinking(shouldRestoreOnFocusLoss(process.env.CMUX_SURFACE_ID));
       return;
     }
 
-    await stopBlinking();
+    // A mode transition immediately replaces the LED state, so avoid a
+    // transient restore between the old and new modes.
+    await stopBlinking(false);
     if (desiredMode === "blink") {
       startBlinking(ctx);
     } else if (desiredMode === "fastBlink") {

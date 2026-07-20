@@ -110,6 +110,7 @@ static void close_caps_lock_led(CapsLockLed *led) {
 
 static int blink(CapsLockLed *led, int interval_ms) {
   bool on = true;
+  bool restore_on_exit = true;
   if (!set_led(led, on)) return 2;
 
   struct pollfd parent = {
@@ -119,7 +120,14 @@ static int blink(CapsLockLed *led, int interval_ms) {
 
   while (running) {
     int poll_result = poll(&parent, 1, interval_ms);
-    if (poll_result > 0) break;
+    if (poll_result > 0) {
+      char command = '\0';
+      if ((parent.revents & POLLIN) != 0 && read(STDIN_FILENO, &command, 1) == 1 &&
+          command == 'q') {
+        restore_on_exit = false;
+      }
+      break;
+    }
     if (poll_result < 0) {
       if (errno == EINTR) continue;
       break;
@@ -128,7 +136,7 @@ static int blink(CapsLockLed *led, int interval_ms) {
     if (!set_led(led, on)) break;
   }
 
-  set_led(led, logical_caps_lock_is_on());
+  if (restore_on_exit) set_led(led, logical_caps_lock_is_on());
   return 0;
 }
 
