@@ -1,4 +1,6 @@
 # CapsPulse
+<img width="2172" height="724" alt="ChatGPT Image Jul 20, 2026, 08_19_29 PM" src="https://github.com/user-attachments/assets/7117c1e9-89a3-42f2-8ce6-9775427c44a6" />
+
 
 **See your Pi agent working at a glance.**
 
